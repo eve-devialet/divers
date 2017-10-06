@@ -97,8 +97,7 @@ fi
 
 cd ~
 # Pipe to netcat
-echo "Piping sound from card $card to $my_ip:$my_port"
-arecord -f S32_LE -r48000 -c2 -D hw:0,$card -F0 --period-size=1024 -B0
---buffer-size=4096 | nc $my_ip $my_port
+echo "Piping sound from card $card to $my_ip $my_port"
+arecord -f S32_LE -r48000 -c2 -D hw:0,$card -F0 --period-size=1024 -B0 --buffer-size=4096 | nc $my_ip $my_port
 
 exit 0
