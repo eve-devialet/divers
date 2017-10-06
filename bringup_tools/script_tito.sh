@@ -1,6 +1,6 @@
 #!/bin/bash
 
-my_ip="192.168.0.208"
+my_ip="192.168.0.205"
 my_port="3334"
 
 echo "Select your input:"
@@ -25,13 +25,9 @@ echo "1" > gpio404//value
 i2cset -y 1 0x13 0x01 0x5a b 
 # Interrupt on unlock
 i2cset -y 1 0x13 0x05 0xa5 b
+
 # Set SoC in slave
-echo "Y" > /sys/kernel/debug/cygnussvk_cfg/ssp_testport1/slave_mode
-# Set SoC in TDM
-echo "Y" > /sys/kernel/debug/cygnussvk_cfg/ssp_testport1/tdm_mode
-echo "256" > /sys/kernel/debug/cygnussvk_cfg/ssp_testport1/tdm_framesize
-# RX audio extraction for HDMI chip
-echo 2 > /sys/class/hdmi/sii9396/rx_audio_extraction
+echo "Y" > /sys/kernel/debug/cygnussvk_cfg/ssp_testport0/slave_mode
 
 card="0" 
 
@@ -45,7 +41,13 @@ then
 elif [ $input -eq 1 ]
 then
     echo "HDMI TDM"
+    # Set SoC in TDM
+    echo "Y" > /sys/kernel/debug/cygnussvk_cfg/ssp_testport1/slave_mode
+    echo "Y" > /sys/kernel/debug/cygnussvk_cfg/ssp_testport1/tdm_mode
+    echo "256" > /sys/kernel/debug/cygnussvk_cfg/ssp_testport1/tdm_framesize
     i2cset -y 1 0x13 0x03 0x48 b
+    # RX audio extraction for HDMI chip
+    echo 2 > /sys/class/hdmi/sii9396/rx_audio_extraction
     card="1"
 else
     echo "Nothing selected"

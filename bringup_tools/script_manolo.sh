@@ -77,11 +77,11 @@ fi
 # Other modifications
 if [ $input -eq 0 ]
 then
-    echo "SPDIF Left"
+    echo "SPDIF Right"
     i2cset -y 1 0x13 0x03 0x48 b
 elif [ $input -eq 1 ]
 then
-    echo "SPDIF Right"
+    echo "SPDIF Left"
     i2cset -y 1 0x13 0x03 0x49 b
 elif [ $input -eq 2 ]
 then
