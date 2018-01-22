@@ -11,6 +11,22 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+def max_glissant(vector, n_avg=4):
+    '''
+    Maximum glissant
+    vector : input data
+    n_avg : number of samples to average from
+    '''
+    result_vect = np.zeros(np.shape(vector))
+
+    # Beginning: take n first samples as is
+    result_vect[0:n_avg-1] = vector[0:n_avg-1]
+
+    for i in np.arange(n_avg, np.size(vector)+1):
+        result_vect[i-1] = np.max(vector[i-n_avg:i])
+    return(result_vect)
+
 plt.clf()
 
 filelist = os.listdir("./")
@@ -28,9 +44,12 @@ for myfile in csvfilelist:
 
     my_data = np.genfromtxt(myfile + "temp", delimiter=';')
 
-    vector = my_data[:, 0]
+    freq_axis = my_data[:, 0]
+    data = my_data[:, 1]
+    # Uncomment if you want to take maximum value over n samples
+    # data = max_glissant(data, n_avg=6)
 
-    plt.semilogx(my_data[:, 0], my_data[:, 1], label=myfile[0:-4])
+    plt.semilogx(freq_axis, data, label=myfile[0:-4])
 
 plt.legend()
 plt.xlim(150000, 30000000)
