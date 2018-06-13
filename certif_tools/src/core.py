@@ -125,6 +125,22 @@ def start_audio(ipv6, analog=True):
         execute_command_no_ret(ipv6, "/root/digital.sh")
     #print("Audio started")
 
+def start_hdmi_audio(ipv6):
+    '''
+    Starts manolo audio
+    '''
+    execute_command(ipv6, "/usr/bin/killall gst-launch-1.0")
+    print("Starting audio")
+    execute_command_no_ret(ipv6, "/root/hdmi_audio.sh")
+
+def start_tito_spdif(ipv6):
+    '''
+    Starts Tito spdif audio
+    '''
+    execute_command(ipv6, "/usr/bin/killall gst-launch-1.0")
+    print("Starting audio")
+    execute_command_no_ret(ipv6, "/root/tito_digital.sh")
+
 if __name__ == "__main__":
     devices = find_ip()
     for ip in devices:
