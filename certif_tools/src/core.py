@@ -51,9 +51,21 @@ def execute_command(ipv6, cmd):
     print(err)
     return(out, err)
 
+def execute_scp(ipv6, file, target_path):
+    '''
+    Execute a command on a device
+    '''
+    cmd = "scp -6 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i {key} {file} root@\[{ipv6}%{iface}\]:{target_path}".format(key=key_file, ipv6=ipv6, iface=iface, file=file, target_path=target_path)
+    ret = sPopen(cmd)
+    print(cmd)
+    out = ret.stdout.readlines()
+    err = ret.stderr.readlines()
+    print(err)
+    return(out, err)
+
 def execute_command_no_ret(ipv6, cmd):
     cmd = "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i {key} root@{ipv6}%{iface} {cmd} &".format(key=key_file, ipv6=ipv6, iface=iface, cmd=cmd)
-    ret = dnwPopen(cmd)
+    dnwPopen(cmd)
 
 def stop_plc(ipv6):
     '''
@@ -77,7 +89,7 @@ def find_ip():
     for r in ret:
         print(r)
         ip = rex.findall(str(r))
-        if len(ip) > 0: 
+        if len(ip) > 0:
             ip = ip[0]
             if ip[-1] == ":":
                 ip = ip[0:-1]
@@ -99,7 +111,7 @@ def is_manolo(ipv6):
     else:
         manolo = False
     return(manolo)
-    
+
 
 def start_audio(ipv6, analog=True):
     '''
@@ -118,4 +130,5 @@ if __name__ == "__main__":
     for ip in devices:
         if is_manolo(ip):
             print("This is a Manolo")
+        execute_scp(ip, "{}/../test.txt".format(CURRENT_DIR), "/root/")
             #start_audio(ip, analog=True)
