@@ -141,6 +141,20 @@ def start_tito_spdif(ipv6):
     print("Starting audio")
     execute_command_no_ret(ipv6, "/root/tito_digital.sh")
 
+def start_plc(ipv6):
+    '''
+    Starts PLC
+    '''
+    stdout, __ = execute_command(ipv6, "/root/plc.sh")
+    print(stdout)
+
+def flash_plc(ipv6):
+    '''
+    Flash PLC
+    '''
+    stdout, __ = execute_command(ipv6, "/root/PLC_install/plc_flash.sh")
+    print(stdout)
+
 if __name__ == "__main__":
     devices = find_ip()
     for ip in devices:

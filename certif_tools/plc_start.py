@@ -8,9 +8,9 @@ import os
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 
-from src.core import find_ip, stop_plc
+from src.core import find_ip, start_plc
 
 if __name__ == "__main__":
     devices = find_ip()
     for ip in devices:
-        stop_plc(ip)
+        start_plc(ip)
