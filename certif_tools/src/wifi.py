@@ -147,3 +147,4 @@ def wifi_connection(ip):
             invalid = 0
             ipv6 = valid[0]
     end_test("Connected to Wifi with SSID {} and ipv6 {}".format(ssid, ipv6[0]))
+    return("Connected to Wifi with SSID {} and ipv6 {}".format(ssid, ipv6[0]))

@@ -154,6 +154,11 @@ def flash_plc(ipv6):
     '''
     stdout, __ = execute_command(ipv6, "/root/PLC_install/plc_flash.sh")
     print(stdout)
+    
+def info_plc(ipv6):
+    stdout, __ = execute_command(ipv6, "plcinit -i plc0 -r")
+    print(stdout)
+    return(stdout)
 
 if __name__ == "__main__":
     devices = find_ip()
