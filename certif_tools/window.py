@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 Created on Thu Jun 14 11:04:12 2018
@@ -15,3 +15,4 @@ if __name__ == "__main__":
     win = mwui.MyMainWindow()
     win.show()
     sys.exit(myApp.exec_())
+    

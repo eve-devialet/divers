@@ -40,12 +40,15 @@ class MyWidget(QtGui.QWidget, UIModel.Ui_Form):
         self.setupUi(self)
 
         buttons = [self.deviceInfo, self.manoAnaStart, self.manoDigiStart,
-                   self.titoHdmiStart, self.titoSpdifStart, self.wifiConnect, 
-                   self.plcStart, self.plcFlash, self.plcStop, self.plcInfo]
+                   self.titoHdmiStart, self.titoSpdifStart, 
+                   self.wifiConnect, 
+                   self.plcStart, self.plcErase, self.plcFlash, 
+                   self.plcStop, self.plcInfo]
         functions = [self.dev_info, self.mano_ana_start, self.mano_digi_start,
                      self.tito_hdmi_start, self.tito_spdif_start, 
-                     self.wifi_connect, self.plc_start, self.plc_stop,
-                     self.plc_flash, self.plc_info]
+                     self.wifi_connect,
+                     self.plc_start, self.plc_unflash, self.plc_flash,
+                     self.plc_stop, self.plc_info]
         for button, func in zip(buttons, functions):
             # Connect buttons
             QtCore.QObject.connect(button,
@@ -128,3 +131,9 @@ class MyWidget(QtGui.QWidget, UIModel.Ui_Form):
         for ip in devices:
             core.flash_plc(ip)
         self.answerLabel.setText("PLC flashed")
+        
+    def plc_unflash(self):
+        devices = core.find_ip()
+        for ip in devices:
+            core.unflash_plc(ip)
+        self.answerLabel.setText("PLC erased")

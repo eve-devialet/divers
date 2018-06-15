@@ -71,8 +71,7 @@ def stop_plc(ipv6):
     '''
     Stops plc
     '''
-    execute_command(ipv6, "/usr/bin/plcinit -i plc0 -H")
-    execute_command(ipv6, "/sbin/ifconfig plc0 down")
+    execute_command(ipv6, "/root/plc_stop.sh")
 
 def find_ip():
     '''
@@ -153,6 +152,13 @@ def flash_plc(ipv6):
     Flash PLC
     '''
     stdout, __ = execute_command(ipv6, "/root/PLC_install/plc_flash.sh")
+    print(stdout)
+    
+def unflash_plc(ipv6):
+    '''
+    Unflash PLC
+    '''
+    stdout, __ = execute_command(ipv6, "/usr/bin/plcinit -i plc0 -E")
     print(stdout)
     
 def info_plc(ipv6):
