@@ -101,7 +101,7 @@ def is_manolo(ipv6):
     cmd = "/bin/cat /sys/bus/platform/devices/hw_id/hw-id/family"
     ret, __ = execute_command(ipv6, cmd)
     if len(ret) < 1:
-        print("No HW family, let us say Tito")
+        print("No HW family")
         return(False)
     ret = str(ret)
     print(ret)
@@ -111,6 +111,19 @@ def is_manolo(ipv6):
         manolo = False
     return(manolo)
 
+def is_tito(ipv6):
+    cmd = "/bin/cat /sys/bus/platform/devices/hw_id/hw-id/family"
+    ret, __ = execute_command(ipv6, cmd)
+    if len(ret) < 1:
+        print("No HW family")
+        return(False)
+    ret = str(ret)
+    print(ret)
+    if ret.find("Tito") > -1:
+        tito = True
+    else:
+        tito = False
+    return(tito)
 
 def start_audio(ipv6, analog=True):
     '''
@@ -153,14 +166,14 @@ def flash_plc(ipv6):
     '''
     stdout, __ = execute_command(ipv6, "/root/PLC_install/plc_flash.sh")
     print(stdout)
-    
+
 def unflash_plc(ipv6):
     '''
     Unflash PLC
     '''
     stdout, __ = execute_command(ipv6, "/usr/bin/plcinit -i plc0 -E")
     print(stdout)
-    
+
 def info_plc(ipv6):
     stdout, __ = execute_command(ipv6, "plcinit -i plc0 -r")
     print(stdout)

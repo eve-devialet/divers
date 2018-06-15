@@ -63,8 +63,10 @@ class MyWidget(QtGui.QWidget, UIModel.Ui_Form):
         for ip in devices:
             if core.is_manolo(ip):
                 txt = "{}\n{}: Manolo".format(txt, ip)
+            elif core.is_tito(ip):
+                txt = "{}\n{}: Tito".format(txt, ip)
             else:
-                txt = "{}\n{}: Tito (or else)".format(txt, ip)
+                txt = "{}\n{}: Else".format(txt, ip)
         self.answerLabel.setText(txt)
 
     def plc_info(self):
@@ -95,14 +97,14 @@ class MyWidget(QtGui.QWidget, UIModel.Ui_Form):
         self.answerLabel.setText("Starting Tito HDMI audio...")
         devices = core.find_ip()
         for ip in devices:
-            if not core.is_manolo(ip):
+            if core.is_tito(ip):
                 core.start_hdmi_audio(ip)
                 
     def tito_spdif_start(self):
         self.answerLabel.setText("Starting Tito spdif audio...")
         devices = core.find_ip()
         for ip in devices:
-            if not core.is_manolo(ip):
+            if core.is_tito(ip):
                 core.start_tito_spdif(ip)
                 
     def wifi_connect(self):
