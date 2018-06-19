@@ -40,12 +40,14 @@ class MyWidget(QtGui.QWidget, UIModel.Ui_Form):
         self.setupUi(self)
 
         buttons = [self.deviceInfo, self.manoAnaStart, self.manoDigiStart,
-                   self.titoHdmiStart, self.titoSpdifStart, 
-                   self.wifiConnect, 
-                   self.plcStart, self.plcErase, self.plcFlash, 
+                   self.titoHdmiStart, self.titoHdmiStart_beta,
+                   self.titoSpdifStart,
+                   self.wifiConnect,
+                   self.plcStart, self.plcErase, self.plcFlash,
                    self.plcStop, self.plcInfo]
         functions = [self.dev_info, self.mano_ana_start, self.mano_digi_start,
-                     self.tito_hdmi_start, self.tito_spdif_start, 
+                     self.tito_hdmi_start, self.tito_hdmi_start_beta,
+                     self.tito_spdif_start,
                      self.wifi_connect,
                      self.plc_start, self.plc_unflash, self.plc_flash,
                      self.plc_stop, self.plc_info]
@@ -54,7 +56,7 @@ class MyWidget(QtGui.QWidget, UIModel.Ui_Form):
             QtCore.QObject.connect(button,
                                    QtCore.SIGNAL(_fromUtf8("clicked()")),
                                    func)
-            
+
     def dev_info(self):
         devices = core.find_ip()
         txt = ""
@@ -77,36 +79,43 @@ class MyWidget(QtGui.QWidget, UIModel.Ui_Form):
         for ip in devices:
             ret = core.info_plc(ip)
             txt = "{}{}: {}\n\n".format(txt, ip, ret)
-        self.answerLabel.setText(txt)  
-      
+        self.answerLabel.setText(txt)
+
     def mano_ana_start(self):
         self.answerLabel.setText("Starting Manolo analog audio...")
         devices = core.find_ip()
         for ip in devices:
             if core.is_manolo(ip):
                 core.start_audio(ip, analog=True)
-            
+
     def mano_digi_start(self):
         self.answerLabel.setText("Starting Manolo digital audio...")
         devices = core.find_ip()
         for ip in devices:
             if core.is_manolo(ip):
                 core.start_audio(ip, analog=False)
-                
+
     def tito_hdmi_start(self):
         self.answerLabel.setText("Starting Tito HDMI audio...")
         devices = core.find_ip()
         for ip in devices:
             if core.is_tito(ip):
                 core.start_hdmi_audio(ip)
-                
+
+    def tito_hdmi_start_beta(self):
+        self.answerLabel.setText("Starting Tito HDMI audio (beta)...")
+        devices = core.find_ip()
+        for ip in devices:
+            if core.is_tito(ip):
+                core.start_hdmi_audio_beta(ip)
+
     def tito_spdif_start(self):
         self.answerLabel.setText("Starting Tito spdif audio...")
         devices = core.find_ip()
         for ip in devices:
             if core.is_tito(ip):
                 core.start_tito_spdif(ip)
-                
+
     def wifi_connect(self):
         devices = core.find_ip()
         for ip in devices:
@@ -115,25 +124,25 @@ class MyWidget(QtGui.QWidget, UIModel.Ui_Form):
             self.answerLabel.setText(ans)
         else:
             self.answerLabel.setText("Wifi connection failed")
-             
+
     def plc_start(self):
         devices = core.find_ip()
         for ip in devices:
             core.start_plc(ip)
         self.answerLabel.setText("PLC started")
-            
+
     def plc_stop(self):
         devices = core.find_ip()
         for ip in devices:
             core.stop_plc(ip)
         self.answerLabel.setText("PLC stopped")
-            
+
     def plc_flash(self):
         devices = core.find_ip()
         for ip in devices:
             core.flash_plc(ip)
         self.answerLabel.setText("PLC flashed")
-        
+
     def plc_unflash(self):
         devices = core.find_ip()
         for ip in devices:

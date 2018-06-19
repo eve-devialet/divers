@@ -82,6 +82,9 @@ class Ui_Form(object):
         self.titoSpdifStart = QtGui.QPushButton(Form)
         self.titoSpdifStart.setObjectName(_fromUtf8("titoSpdifStart"))
         self.verticalLayout_2.addWidget(self.titoSpdifStart)
+        self.titoHdmiStart_beta = QtGui.QPushButton(Form)
+        self.titoHdmiStart_beta.setObjectName(_fromUtf8("titoHdmiStart_beta"))
+        self.verticalLayout_2.addWidget(self.titoHdmiStart_beta)
         self.horizontalLayout_2.addLayout(self.verticalLayout_2)
         self.verticalLayout_7.addLayout(self.horizontalLayout_2)
         self.horizontalLayout = QtGui.QHBoxLayout()
@@ -128,5 +131,6 @@ class Ui_Form(object):
         self.manoDigiStart.setText(_translate("Form", "Manolo digital audio start", None))
         self.titoHdmiStart.setText(_translate("Form", "Tito HDMI audio start", None))
         self.titoSpdifStart.setText(_translate("Form", "Tito spdif audio start", None))
+        self.titoHdmiStart_beta.setText(_translate("Form", "Tito HDMI audio start (beta)", None))
         self.answerLabel.setText(_translate("Form", ">", None))
 

@@ -118,6 +118,13 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="titoHdmiStart_beta">
+         <property name="text">
+          <string>Tito HDMI audio start (beta)</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>

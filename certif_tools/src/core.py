@@ -139,11 +139,19 @@ def start_audio(ipv6, analog=True):
 
 def start_hdmi_audio(ipv6):
     '''
-    Starts manolo audio
+    Starts HDMI audio
     '''
     execute_command(ipv6, "/usr/bin/killall gst-launch-1.0")
     print("Starting audio")
     execute_command_no_ret(ipv6, "/root/hdmi_audio.sh")
+
+def start_hdmi_audio_beta(ipv6):
+    '''
+    Starts HDMI audio with beta script
+    '''
+    execute_command(ipv6, "/usr/bin/killall gst-launch-1.0")
+    print("Starting audio")
+    execute_command_no_ret(ipv6, "/root/hdmi_audio_beta.sh")
 
 def start_tito_spdif(ipv6):
     '''
