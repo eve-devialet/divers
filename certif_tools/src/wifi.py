@@ -17,7 +17,7 @@ from core import config, execute_command, sPopen, execute_scp
 def end_test(*args):
     print(args)
     sys.exit()
-    
+
 def debug(*args):
     print(args)
 
@@ -89,7 +89,6 @@ def wifi_connection(ip):
         cmdlist = list()
         cmdlist.append("/sbin/ifconfig {} down".format(wlan_iface))
         cmdlist.append("/sbin/ifconfig {} {}".format(wlan_iface, static_ip))
-        cmdlist.append("/sbin/ifconfig {} add {}".format(wlan_iface, static_ipv6))
         cmdlist.append("/sbin/ifconfig {} up".format(wlan_iface))
         cmd_connect = """/usr/sbin/wpa_supplicant -Dnl80211 -i{} -B -c/tmp/wpa.conf""".format(wlan_iface)
         cmdlist.append(cmd_connect)
@@ -149,4 +148,26 @@ def wifi_connection(ip):
         else:
             invalid = 0
             ipv6 = valid[0]
-    return("Connected to Wifi with SSID {} and ipv6 {}".format(ssid, ipv6[0]))
+
+    # Changing IPV6
+    # Find bad ipv6 wifi address
+    ip_regex = re.compile("""inet6 addr: ([^/]*)/(\d*) Scope:""")
+    stdout, stderr = execute_command(ip, """/sbin/ifconfig {}""".format(wlan_iface))
+    returned = "{} {}".format(stdout, stderr)
+    ip_found = ip_regex.findall(returned)
+    print(ip_found)
+    if len(ip_found) > 0:
+        wlan_ipv6 = "{}/{}".format(ip_found[0][0], ip_found[0][1])
+    else:
+        print("FAILED with ret: {} and ipfound {}".format(returned, ip_found))
+        return()
+    cmdlist = list()
+    cmdlist.append("/sbin/ifconfig {} add {}".format(wlan_iface, static_ipv6))
+    cmdlist.append("/sbin/ifconfig {} del {}".format(wlan_iface, wlan_ipv6))
+    for cmd in cmdlist:
+        stdout, stderr = execute_command(ip, cmd)
+        returned = "{} {}".format(stdout, stderr)
+        debug(returned)
+    # End changing IPV6
+
+    return("Connected to Wifi with SSID {} and ipv6 {}".format(ssid, static_ipv6))
