@@ -20,6 +20,12 @@
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
         <widget class="QPushButton" name="deviceInfo">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="statusTip">
+          <string>Show devices on network</string>
+         </property>
          <property name="text">
           <string>Device info</string>
          </property>
@@ -27,6 +33,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="plcInfo">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="statusTip">
+          <string>Shows information on PLC</string>
+         </property>
          <property name="text">
           <string>PLC info</string>
          </property>
@@ -34,6 +46,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="flashFirmware">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="statusTip">
+          <string>Flashes UsineOS image</string>
+         </property>
          <property name="text">
           <string>Flash firmware</string>
          </property>
@@ -45,6 +63,12 @@
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
         <widget class="QPushButton" name="wifiConnect">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="statusTip">
+          <string>Connects to Wifi and disconnects wired interface</string>
+         </property>
          <property name="text">
           <string>Wifi connect</string>
          </property>
@@ -52,6 +76,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="plcStart">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="statusTip">
+          <string>Starts PLC</string>
+         </property>
          <property name="text">
           <string>PLC start</string>
          </property>
@@ -59,6 +89,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="plcStop">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="statusTip">
+          <string>Stops PLC by stopping its power supply</string>
+         </property>
          <property name="text">
           <string>PLC stop</string>
          </property>
@@ -70,6 +106,12 @@
       <layout class="QVBoxLayout" name="verticalLayout_6">
        <item>
         <widget class="QPushButton" name="plcFlash">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="statusTip">
+          <string>Flashes PLC firmware</string>
+         </property>
          <property name="text">
           <string>PLC flash</string>
          </property>
@@ -77,6 +119,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="plcErase">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="statusTip">
+          <string>Erasing PLC firmware</string>
+         </property>
          <property name="text">
           <string>PLC erase</string>
          </property>
@@ -95,6 +143,12 @@
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <widget class="QPushButton" name="manoAnaStart">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="statusTip">
+          <string>Starts streaming analog audio on local network</string>
+         </property>
          <property name="text">
           <string>Manolo analog audio start</string>
          </property>
@@ -102,6 +156,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="manoDigiStart">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="statusTip">
+          <string>Starts streaming digital  audio on local network</string>
+         </property>
          <property name="text">
           <string>Manolo digital audio start</string>
          </property>
@@ -113,6 +173,9 @@
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QPushButton" name="titoHdmiStart">
+         <property name="statusTip">
+          <string>Starts streaming audio taken from HDMI on local network</string>
+         </property>
          <property name="text">
           <string>Tito HDMI audio start</string>
          </property>
@@ -120,6 +183,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="titoSpdifStart">
+         <property name="statusTip">
+          <string>Starts streaming SPDIF audio on local network</string>
+         </property>
          <property name="text">
           <string>Tito spdif audio start</string>
          </property>
@@ -127,6 +193,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="titoHdmiStart_beta">
+         <property name="statusTip">
+          <string>Black magic button, do not use unless everything else fails</string>
+         </property>
          <property name="text">
           <string>Tito HDMI audio start (beta)</string>
          </property>
@@ -167,8 +236,14 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
            <property name="text">
             <string>&gt;</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
            </property>
            <property name="textInteractionFlags">
             <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
