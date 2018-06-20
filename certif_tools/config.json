@@ -1,7 +1,0 @@
-{
-"LocalInterface": "enp0s3",
-"RsaFile": "/home/devialet/.ssh/ssh_keys/prod/seprolec/id_rsa_seprolec",
-"dut_wifi_iface": "wlp1s0",
-"wifi_ssid": "ImNotABrickYet",
-"wifi_pass": "devialetlovesme"
-}
