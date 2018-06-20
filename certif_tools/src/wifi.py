@@ -170,4 +170,11 @@ def wifi_connection(ip):
         debug(returned)
     # End changing IPV6
 
+    # Turn down wired interface so that streaming happens on WiFi
+    # TODO This is dangerous
+    # TODO config file
+    #dut_wired_iface = config["dut_wired_iface"]
+    dut_wired_iface = "wired0"
+    cmd = "/sbin/ifconfig {} down".format(dut_wired_iface)
+
     return("Connected to Wifi with SSID {} and ipv6 {}".format(ssid, static_ipv6))

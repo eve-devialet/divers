@@ -2,6 +2,7 @@
 "LocalInterface": "enp0s5",
 "RsaFile": "/home/eve/.ssh/ssh_keys/prod/seprolec/id_rsa_seprolec",
 "dut_wifi_iface": "wlp1s0",
+"dut_wired_iface": "wired0",
 "wifi_ssid": "certif_titolo",
 "wifi_pass": "devialet"
 }
