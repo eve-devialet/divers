@@ -32,6 +32,8 @@ def wifi_connection(ip):
     password = config["wifi_pass"]
     pos = hash(ip)%256
     static_ip = "192.168.1.{}".format(pos)
+    pos = hash(ip)%(0xffff)
+    static_ipv6 = "fe80::7ec4:efff:feff:{:04x}/64".format(pos)
 
     # First detect if we are already connected to wifi or not
     connected = False
@@ -87,6 +89,7 @@ def wifi_connection(ip):
         cmdlist = list()
         cmdlist.append("/sbin/ifconfig {} down".format(wlan_iface))
         cmdlist.append("/sbin/ifconfig {} {}".format(wlan_iface, static_ip))
+        cmdlist.append("/sbin/ifconfig {} add {}".format(wlan_iface, static_ipv6))
         cmdlist.append("/sbin/ifconfig {} up".format(wlan_iface))
         cmd_connect = """/usr/sbin/wpa_supplicant -Dnl80211 -i{} -B -c/tmp/wpa.conf""".format(wlan_iface)
         cmdlist.append(cmd_connect)
