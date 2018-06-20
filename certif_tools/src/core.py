@@ -50,6 +50,19 @@ def execute_command(ipv6, cmd):
     err = ret.stderr.readlines()
     print(err)
     return(out, err)
+    
+def execute_flash_command(ipv6, img, of):
+    '''
+    Execute a command on a device
+    '''
+    cmd = "dd if={img} | ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i {key} root@{ipv6}%{iface} dd of={of}".format(key=key_file, 
+                 ipv6=ipv6, iface=iface, img=img, of=of)
+    ret = sPopen(cmd)
+    print(cmd)
+    out = ret.stdout.readlines()
+    err = ret.stderr.readlines()
+    print(err)
+    return(out, err)
 
 def execute_scp(ipv6, file, target_path):
     '''

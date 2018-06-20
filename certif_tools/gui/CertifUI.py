@@ -15,7 +15,7 @@ sys.path.append(CURRENT_DIR)
 import CertifUIModel as UIModel
 import src.core as core
 import src.wifi as wifi
-
+import src.flash as flash
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -44,13 +44,15 @@ class MyWidget(QtGui.QWidget, UIModel.Ui_Form):
                    self.titoSpdifStart,
                    self.wifiConnect,
                    self.plcStart, self.plcErase, self.plcFlash,
-                   self.plcStop, self.plcInfo]
+                   self.plcStop, self.plcInfo,
+                   self.flashFirmware]
         functions = [self.dev_info, self.mano_ana_start, self.mano_digi_start,
                      self.tito_hdmi_start, self.tito_hdmi_start_beta,
                      self.tito_spdif_start,
                      self.wifi_connect,
                      self.plc_start, self.plc_unflash, self.plc_flash,
-                     self.plc_stop, self.plc_info]
+                     self.plc_stop, self.plc_info,
+                     self.flash_firmware]
         for button, func in zip(buttons, functions):
             # Connect buttons
             QtCore.QObject.connect(button,
@@ -148,3 +150,11 @@ class MyWidget(QtGui.QWidget, UIModel.Ui_Form):
         for ip in devices:
             core.unflash_plc(ip)
         self.answerLabel.setText("PLC erased")
+  
+    def flash_firmware(self):
+        devices = core.find_ip()
+        total_ret = "WARNING: Reboot device after flashing\n"
+        for ip in devices:
+            ret = flash.flash_device(ip)
+            total_ret = "{}\n{}".format(total_ret, ret)
+        self.answerLabel.setText(total_ret)

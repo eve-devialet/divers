@@ -32,6 +32,13 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QPushButton" name="flashFirmware">
+         <property name="text">
+          <string>Flash firmware</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
