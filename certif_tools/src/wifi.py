@@ -74,7 +74,8 @@ def wifi_connection(ip):
 
         cmd_pass = """wpa_passphrase "{}" "{}" """.format(ssid, password)
         pc = sPopen(cmd_pass)
-        wpaconf = str(pc.communicate()[0], "utf-8")
+        ans = pc.communicate()[0]
+        wpaconf = str(ans)
         if pc.returncode != 0:
             end_test("wpa_passphrase failed with error: {}".format(wpaconf))
         with open("wpa.conf", "w") as myconf:
