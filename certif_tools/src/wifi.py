@@ -42,7 +42,7 @@ def wifi_connection(ip):
     if len(valid) < 1:
         connected = False
     elif valid[0] != ssid:
-        end_test(2, "Connected to wrong SSID, should pose problem")
+        return("Connected to wrong SSID, should pose problem")
     else:
         connected = True
 
@@ -60,8 +60,7 @@ def wifi_connection(ip):
         fail_regex = re.compile("failed", re.IGNORECASE)
         is_fail = fail_regex.findall(returned)
         if len(is_fail) > 0:
-            end_test("Wifi scan failed",
-                     "{}".format(returned))
+            return("Wifi scan failed: {}".format(returned))
 
         split_regex = re.compile("\nBSS ")
         found_nets = split_regex.split(returned)
@@ -77,7 +76,7 @@ def wifi_connection(ip):
         ans = pc.communicate()[0]
         wpaconf = str(ans)
         if pc.returncode != 0:
-            end_test("wpa_passphrase failed with error: {}".format(wpaconf))
+            return("wpa_passphrase failed with error: {}".format(wpaconf))
         with open("wpa.conf", "w") as myconf:
             myconf.writelines(wpaconf)
 
@@ -107,7 +106,7 @@ def wifi_connection(ip):
     while invalid:
         loops += 1
         if loops > timeout:
-            end_test("Timeout to connect to Wifi network expired")
+            return("Timeout to connect to Wifi network expired")
         stdout, stderr = execute_command(ip,
                                         "/usr/sbin/iw dev {} link".format(wlan_iface))
         returned = "{} {}".format(stdout, stderr)
@@ -123,29 +122,28 @@ def wifi_connection(ip):
     verif_regex = re.compile("""SSID: ([^\\\\]+)""")
     valid = verif_regex.findall(returned)
     if len(valid) < 1:
-        end_test("Not connected to any WiFi network")
+        return("Not connected to any WiFi network")
     elif valid[0] != ssid:
-        end_test("Connected to Wifi but SSID {} not right".format(valid))
+        return("Connected to Wifi but SSID {} not right".format(valid))
 
     # Waiting for IPV6 assignment
     invalid = 1
     loops = 0
-    ip_regex = re.compile("""inet6 addr: ([^/]*)/(\d*) Scope:Global""")
+    ip_regex = re.compile("""inet6 addr: ([^/]*)/(\d*) Scope:""")
 
     while invalid:
         loops += 1
         if loops > timeout:
-            end_test("Timeout to get global IPv6 for Wifi network expired")
+            return("Timeout to get global IPv6 for Wifi network expired")
         stdout, stderr = execute_command(ip,
                                         "/sbin/ifconfig {}".format(wlan_iface))
         returned = "{} {}".format(stdout, stderr)
         valid = ip_regex.findall(returned)
         if len(valid) < 1:
-            debug("Not connected to any WiFi network, waiting...")
+            debug("Not connected to any WiFi network, IPv6 issue, waiting...")
             invalid = 1
             time.sleep(1)
         else:
             invalid = 0
             ipv6 = valid[0]
-    end_test("Connected to Wifi with SSID {} and ipv6 {}".format(ssid, ipv6[0]))
     return("Connected to Wifi with SSID {} and ipv6 {}".format(ssid, ipv6[0]))
