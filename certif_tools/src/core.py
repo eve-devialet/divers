@@ -50,12 +50,12 @@ def execute_command(ipv6, cmd):
     err = ret.stderr.readlines()
     print(err)
     return(out, err)
-    
+
 def execute_flash_command(ipv6, img, of):
     '''
     Execute a command on a device
     '''
-    cmd = "dd if={img} | ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i {key} root@{ipv6}%{iface} dd of={of}".format(key=key_file, 
+    cmd = "dd if={img} | ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i {key} root@{ipv6}%{iface} dd of={of}".format(key=key_file,
                  ipv6=ipv6, iface=iface, img=img, of=of)
     ret = sPopen(cmd)
     print(cmd)
@@ -114,22 +114,41 @@ def is_manolo(ipv6):
     cmd = "/bin/cat /sys/bus/platform/devices/hw_id/hw-id/family"
     ret, __ = execute_command(ipv6, cmd)
     if len(ret) < 1:
-        print("No HW family")
-        return(False)
+        cmd = "/bin/cat /sys/bus/platform/devices/hw_id/of_node/fam-gpios"
+        ret, __ = execute_command(ipv6, cmd)
+        ret = str(ret)
+        print(ret)
+        if len(ret) < 1:
+            print("No HW family")
+            return(False)
+        if ret.find("(") > -1:
+            # Manolo V102
+            print("V102")
+            return(False)
     ret = str(ret)
     print(ret)
     if ret.find("Manolo") > -1:
         manolo = True
     else:
         manolo = False
+
     return(manolo)
 
 def is_tito(ipv6):
     cmd = "/bin/cat /sys/bus/platform/devices/hw_id/hw-id/family"
     ret, __ = execute_command(ipv6, cmd)
     if len(ret) < 1:
-        print("No HW family")
-        return(False)
+        cmd = "/bin/cat /sys/bus/platform/devices/hw_id/of_node/fam-gpios"
+        ret, __ = execute_command(ipv6, cmd)
+        ret = str(ret)
+        print(ret)
+        if len(ret) < 1:
+            print("No HW family")
+            return(False)
+        if ret.find("(") > -1:
+            # Manolo V102
+            print("V102")
+            return(True)
     ret = str(ret)
     print(ret)
     if ret.find("Tito") > -1:
