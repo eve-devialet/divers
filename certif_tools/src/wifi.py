@@ -175,6 +175,7 @@ def wifi_connection(ip):
     # TODO config file
     #dut_wired_iface = config["dut_wired_iface"]
     dut_wired_iface = "wired0"
-    cmd = "/sbin/ifconfig {} down".format(dut_wired_iface)
+    cmd = """ "/sbin/ifconfig {} down &" """.format(dut_wired_iface)
+    stdout, stderr = execute_command(ip, cmd)
 
     return("Connected to Wifi with SSID {} and ipv6 {}".format(ssid, static_ipv6))
