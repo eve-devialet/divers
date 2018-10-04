@@ -6,6 +6,7 @@ Spyder Editor
 import subprocess
 import time
 import audio_common
+import os
 
 #Measurement parameters
 macs = ["04:52:C7:F9:43:38", "00:12:6F:B6:8D:BC", "88:C6:26:8C:0B:B1"]
@@ -41,19 +42,23 @@ start_time = time.time()
 with open("result.txt", "a") as myres:
      myres.write("***\nStart time: {}\n".format(time.ctime(start_time)))
 cmd_bt = "/usr/bin/hcitool con | grep -c {}"
-#cmd_rec = "timeout -s SIGINT {} parecord --format=u8 --channels=1 {}"
-#cmd_rec = "timeout -s SIGINT {} parecord --raw --rate=44100 --format=u8 --channels=1 {}"
 cmd_rec = "arecord -d {} -c 1 -r 8000 -f S16_LE {}"
 wavfile_spec = "sounds/{}{}.wav"
 idx = 0
 resultfile = "result.txt"
+
+#Cleaning sound files
+try:
+    os.rmdir("./sounds")
+    os.mkdir("sounds")
+except:
+    pass
 
 while 1:
     idx += 1
     if len(devices) < 1:
         break
     for device, mac_device in zip(devices, macs):
-        #"arecord toto.wav"
         ret = runcmd(cmd_bt.format(mac_device))
         if int(ret) < 1:
             disconnect(device, mac_device)                
@@ -61,12 +66,10 @@ while 1:
             macs.remove(mac_device)
     
     for device, mac_device in zip(devices, macs):
-        #ret = os.system(cmd)
         wavfile = wavfile_spec.format(device, idx)
         ret = runcmd(cmd_rec.format(record_time, wavfile))
-        if len(ret) < 4:
-            print("Return code: {}".format(ret))
-        time.sleep(sleep_time)
+        # TODO test if this fails ?
         is_ok, value = audio_common.compute_signal(wavfile, threshold=0.05, nb_chan=1, log="")
         if not is_ok:
             message(device, mac_device, "Signal not found: value {:.2f} inferior to threshold".format(value))
+    time.sleep(sleep_time)
