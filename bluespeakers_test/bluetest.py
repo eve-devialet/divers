@@ -10,7 +10,8 @@ import audio_common
 #Measurement parameters
 macs = ["04:52:C7:F9:43:38", "00:12:6F:B6:8D:BC", "88:C6:26:8C:0B:B1"]
 devices = ["Bose", "Beoplay",  "Megaboom"]
-record_time = 2
+record_time = 5
+sleep_time = 15
 
 def runcmd(cmd):
     ret = subprocess.Popen(cmd, shell=True, 
@@ -42,7 +43,7 @@ with open("result.txt", "a") as myres:
 cmd_bt = "/usr/bin/hcitool con | grep -c {}"
 #cmd_rec = "timeout -s SIGINT {} parecord --format=u8 --channels=1 {}"
 #cmd_rec = "timeout -s SIGINT {} parecord --raw --rate=44100 --format=u8 --channels=1 {}"
-cmd_rec = "arecord -d {} -c 1 -r 8000 -f U8 {}"
+cmd_rec = "arecord -d {} -c 1 -r 8000 -f S16_LE {}"
 wavfile_spec = "sounds/{}{}.wav"
 idx = 0
 resultfile = "result.txt"
@@ -58,13 +59,14 @@ while 1:
             disconnect(device, mac_device)                
             devices.remove(device)
             macs.remove(mac_device)
-
+    
+    for device, mac_device in zip(devices, macs):
         #ret = os.system(cmd)
         wavfile = wavfile_spec.format(device, idx)
         ret = runcmd(cmd_rec.format(record_time, wavfile))
         if len(ret) < 4:
             print("Return code: {}".format(ret))
-        time.sleep(1)
-        is_ok, value = audio_common.compute_signal(wavfile, threshold=0.6, nb_chan=1, log="")
+        time.sleep(sleep_time)
+        is_ok, value = audio_common.compute_signal(wavfile, threshold=0.05, nb_chan=1, log="")
         if not is_ok:
             message(device, mac_device, "Signal not found: value {:.2f} inferior to threshold".format(value))
