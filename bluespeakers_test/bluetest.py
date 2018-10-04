@@ -40,7 +40,9 @@ start_time = time.time()
 with open("result.txt", "a") as myres:
      myres.write("***\nStart time: {}\n".format(time.ctime(start_time)))
 cmd_bt = "/usr/bin/hcitool con | grep -c {}"
-cmd_rec = "timeout {} parecord --format=u8 --channels=1 {}"
+#cmd_rec = "timeout -s SIGINT {} parecord --format=u8 --channels=1 {}"
+#cmd_rec = "timeout -s SIGINT {} parecord --raw --rate=44100 --format=u8 --channels=1 {}"
+cmd_rec = "arecord -d {} -c 1 -r 8000 -f U8 {}"
 wavfile_spec = "sounds/{}{}.wav"
 idx = 0
 resultfile = "result.txt"
@@ -60,6 +62,9 @@ while 1:
         #ret = os.system(cmd)
         wavfile = wavfile_spec.format(device, idx)
         ret = runcmd(cmd_rec.format(record_time, wavfile))
-        is_ok, value = audio_common.compute_signal(wavfile, threshold=0.01, nb_chan=1, log="")
+        if len(ret) < 4:
+            print("Return code: {}".format(ret))
+        time.sleep(1)
+        is_ok, value = audio_common.compute_signal(wavfile, threshold=0.6, nb_chan=1, log="")
         if not is_ok:
-            message(device, mac_device, "Signal not found: value {} inferior to threshold")
+            message(device, mac_device, "Signal not found: value {:.2f} inferior to threshold".format(value))

@@ -6,9 +6,9 @@
 import numpy as np
 import sys
 
-from scipy.io import wavfile
-from scipy.fftpack import fft
-from scipy.signal import blackman
+from scipy.io import wavfile as sciwavfile
+#from scipy.fftpack import fft
+#from scipy.signal import blackman
 
 
 def find_frequency(myarray, fs=48000):
@@ -38,7 +38,7 @@ def compute_fft(wav_file, nb_chan, expected, max_offset=0.05, log=""):
 
         # Analyse wave file
     try:
-        wavefile = wavfile.read("{}".format(wav_file))
+        wavefile = sciwavfile.read("{}".format(wav_file))
     except Exception as e:
         end_test(3, "Invalid wave file", e)
     framerate = wavefile[0]
@@ -82,18 +82,18 @@ def compute_fft(wav_file, nb_chan, expected, max_offset=0.05, log=""):
 def compute_signal(wav_file, threshold=0.01, nb_chan=1, log=""):
         # Analyse wave file
     try:
-        wavefile = wavfile.read("{}".format(wav_file))
+        wavefile = sciwavfile.read("{}".format(wav_file))
     except Exception as e:
         end_test(3, "Invalid wave file", e)
-    framerate = wavefile[0]
+    #framerate = wavefile[0]
     wavedata = wavefile[1]
-    nchannels = wavedata.shape[1]
+    #nchannels = wavedata.shape[1]
     # Converting int to float
     maxint = np.iinfo(wavedata.dtype).max
     wavedata = wavedata / maxint
 
     try:
-        assert(nchannels == nb_chan)
+        #assert(nchannels == nb_chan)
         totlength = wavedata.shape[0]
         assert(totlength > 1000)
     except AssertionError as exc:
@@ -101,7 +101,7 @@ def compute_signal(wav_file, threshold=0.01, nb_chan=1, log=""):
         end_test(4, "Invalid sound format", exc)
 
     for i in range(nb_chan):
-        val = np.mean(np.abs(wavedata[:, i]))
+        val = np.mean(np.abs(wavedata[:]))
         print("Avg sound value: {}".format(val))
         if (val < threshold):
             log = debug_and_log("No signal found on channel {}".format(i+1), log)
