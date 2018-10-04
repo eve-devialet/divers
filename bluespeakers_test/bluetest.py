@@ -5,6 +5,7 @@ Spyder Editor
 """
 import subprocess
 import time
+import audio_common
 
 #Measurement parameters
 macs = ["04:52:C7:F9:43:38", "00:12:6F:B6:8D:BC", "88:C6:26:8C:0B:B1"]
@@ -15,6 +16,12 @@ def runcmd(cmd):
     ret = subprocess.Popen(cmd, shell=True, 
                            stdout=subprocess.PIPE).communicate()[0]
     return(ret)
+
+def message(device, mac_device, msg):
+    now = time.time() - start_time
+    with open("result.txt", "a") as myres:
+        myres.write("{:.0f}s, device {} ({}): {}\n".format(now, device, 
+                    mac_device, msg))
 
 def disconnect(device, mac_device):
     if int(ret) < 1:
@@ -28,11 +35,13 @@ def disconnect(device, mac_device):
                         stop_time/60, stop_time))
             myres.write("\n\n")    
 
+
 start_time = time.time()
 with open("result.txt", "a") as myres:
      myres.write("***\nStart time: {}\n".format(time.ctime(start_time)))
 cmd_bt = "/usr/bin/hcitool con | grep -c {}"
-cmd_rec = "timeout {} parecord --format=u8 --channels=1 sounds/{}{}.wav"
+cmd_rec = "timeout {} parecord --format=u8 --channels=1 {}"
+wavfile_spec = "sounds/{}{}.wav"
 idx = 0
 resultfile = "result.txt"
 
@@ -49,4 +58,8 @@ while 1:
             macs.remove(mac_device)
 
         #ret = os.system(cmd)
-        ret = runcmd(cmd_rec.format(record_time, device, idx))
+        wavfile = wavfile_spec.format(device, idx)
+        ret = runcmd(cmd_rec.format(record_time, wavfile))
+        is_ok, value = audio_common.compute_signal(wavfile, threshold=0.01, nb_chan=1, log="")
+        if not is_ok:
+            message(device, mac_device, "Signal not found: value {} inferior to threshold")
