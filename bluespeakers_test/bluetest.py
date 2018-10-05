@@ -23,10 +23,10 @@ def message(device, mac_device, msg):
                     mac_device, msg))
 
 def write_values(val_list):
-    val_list.insert(0, time.time() - start_time)
+    val_list_c = [time.time() - start_time] + val_list
     with open("levels.csv", "a") as myres:
         csvw = csv.writer(myres)
-        csvw.writerow(val_list)
+        csvw.writerow(val_list_c)
 
 def disconnect(device, mac_device):
     if int(ret) < 1:
