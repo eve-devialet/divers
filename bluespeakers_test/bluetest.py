@@ -37,7 +37,7 @@ def disconnect(device, mac_device):
                             mac_device))
             myres.write("{:.0f} seconds\n".format(stop_time))
             myres.write("{:.0f}h {:.0f}m {:.0f}s\n".format(stop_time/3600, 
-                        stop_time/60, stop_time))
+                        stop_time%3600, stop_time%60))
             myres.write("\n\n")    
 
 def runcmd(cmd):
