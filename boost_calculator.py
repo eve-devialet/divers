@@ -18,25 +18,33 @@ Vout_max = 40.
 Vin = 3.6 * 2
 Vout = 35.
 
-Iout_max = 14.
-Iout = 7.
+#Iout_max = 14.
+Iout_max = 8.
+Iout = 6.
 
 # Desired delta V for a given output delta I
 DItran = 1.
 DVtran = 0.6
 # Acceptable ripple tension 
-Vripple = 0.1
+Vripple = 1
 
-# Kind is the ration of inductor peak-to-peak ripple current to the 
+# Kind is the ratio of inductor peak-to-peak ripple current to the 
 #average inductor current. It depends on the output capacitor ESR.
-Kind = 0.3
+Kind = 0.7
 
 # Mos
 Qg_mos = 10e-9
 
 # UVLO values
-Vstart = 7.
-Vstop = 6.
+Vuvlo_start = 6.6
+Vuvlo_stop = 6.
+
+### Values for loop compensation
+# Output capacitor ESR value
+ESR = 5e-3
+# Vout setting resistors (typical values)
+Rsh_typ = 220e3
+Rsl_typ = 10e3
 
 # Output file
 outfile = "boost_design.txt"
@@ -44,6 +52,7 @@ outfile = "boost_design.txt"
 
 ##############################################################################
 ### Switching frequency selection
+# Duty cycle range
 # Min Vin
 D1_1 = (Vout_max - Vin_min) / Vout_max
 D1_2 = (Vout_min - Vin_min) / Vout_min
@@ -92,7 +101,7 @@ print("Lmin = {} uH".format(Lmin * 1e6))
 
 L = input("Please input inductance (uH):")
 L = float(L) * 1e-6
-assert(L >= Lmin)
+#assert(L >= Lmin * 0.95)
 
 Ilrms = np.sqrt( (Iout / (1-Dmax)) ** 2 + ((Vin_min * Dmax) / (np.sqrt(12) * L * fsw)) ** 2)
 print("Ilrms = {} A".format(Ilrms))
@@ -130,19 +139,32 @@ Cout = float(Cout) * 1e-6
 
 ### MOSFET selection
 Igd = 2 * Qg_mos * fsw
-print("MOSFET required gate current Igd: {} mA".format(Igd*1e-3))
+print("MOSFET required gate current Igd: {} mA".format(Igd*1e3))
 
 ### Input capacitor
 
 ### UVLO
-Ruvlo_h = ((Vstart * (1.14/1.21) - Vstop)) / (1.8e-6 * (1-(1.14/1.21)) + 3.2e-6)
+Ruvlo_h = ((Vuvlo_start * (1.14/1.21) - Vuvlo_stop)) / (1.8e-6 * (1-(1.14/1.21)) + 3.2e-6)
 Ruvlo_l = Ruvlo_h * 1.14 / (4.3 - 1.14 + Ruvlo_h * (1.8e-6 + 3.2e-6))
 print("Ruvlo_h = {} kOhms, Ruvlo_v = {} kOhms".format(Ruvlo_h * 1e-3, Ruvlo_l * 1e-3))
+
+# Verify Rsh and Rsl values
+Vout_typ = 1.22 * ((Rsh_typ / Rsl_typ) + 1)
+assert(Vout_typ >= Vout_min)
+assert(Vout_typ <= Vout_max)
 
 ### Control loop compensation and recommended bandwidth (2/2)
 adc = (3./40) * (Vin_min / 2 * Rcs * Iout)
 print("ADC = {}".format(adc))
 fpmod = Iout / (2 * np.pi * Vout * Cout)
+fzmod = 1. / (2 * np.pi * ESR * Cout)
+
+Gea = 1.1e-3
+Rcomp = (40 * 2 * np.pi * Cout * Rcs * Vout * fbw * (Rsh_typ + Rsl_typ)) / (Rsl_typ * Vin_min * Gea)
+Ccomp = 10. / (2 * np.pi * Rcomp)
+Chf1 = (Cout * ESR) / Rcomp
+Chf2 = 1./ (20 * np.pi * fbw * Rcomp)
+
 
 with open(outfile, "a") as myfile:
     myfile.writelines(["*Input data: \n",
@@ -160,11 +182,15 @@ with open(outfile, "a") as myfile:
                     "Vripple: {} V\n".format(Vripple),
                     "Kind: {}\n".format(Kind),
                     "Qg_mos: {}\n".format(Qg_mos),
-                    "Vstart: {} V\n".format(Vstart),
-                    "Vstop: {} V\n".format(Vstop)
+                    "Vuvlo_start: {} V\n".format(Vuvlo_start),
+                    "Vuvlo_stop: {} V\n".format(Vuvlo_stop),
+                    "Rsh_typ: {} Ohms\n".format(Rsh_typ),
+                    "Rsl_typ: {} Ohms\n".format(Rsl_typ),
+                    "ESR: {}\n".format(ESR),
+                    "\n"
                     ])
 
-    myfile.writelines(["\n*Results:\n",
+    myfile.writelines(["\n*Resulting component values:\n",
                        "fsw: {} MHz\n".format(fsw / 1e6),
                        "Rt: {} kOhms\n".format(Rt / 1e3),
                         "L: {} uH\n".format(L * 1e6),
@@ -173,9 +199,26 @@ with open(outfile, "a") as myfile:
                         "Rcs: {} mOhms\n".format(Rcs * 1e3),
                         "Prcs: {} W\n".format(Prcs),
                         "fbw: {} kHz\n".format(fbw * 1e-3),
-                        "Cout: {} uF\n".format(Cout * 1e-6),
+                        "Cout: {} uF\n".format(Cout * 1e6),
                         "MOS Igd: {} mA\n".format(Igd * 1e-3),
                         "Ruvlo_h: {} kOhms\n".format(Ruvlo_h * 1e-3),
                         "Ruvlo_l: {} kOhms\n".format(Ruvlo_l * 1e-3),
+                        "Ccomp: {} uF\n".format(Ccomp * 1e6),
+                        "Rcomp: {} Ohms\n".format(Rcomp),
+                        "Chf (1st option): {} pF\n".format(Chf1 * 1e12),
+                        "Chf (2nd option): {} pF\n".format(Chf2 * 1e12),
                         "\n\n"])
     
+### Not mandatory : power calculations
+# MOSFET
+if 0:
+    Rdson_ls = 4.2e-3
+    Rdson_hs = 4.2e-3
+    Qgd = 16e-9
+    Rg = 1.2
+    Vgs_th = 1.1
+    Vcc = 5.5
+    Coss = 680e-12
+    Pcondls = Dmax * Ilrms**2 * Rdson_ls
+    Psw = (fsw / 2) * (Coss * Vout**2 + Vout*(Iout/(1-Dmax)) * Qgd * Rg / (Vcc - Vgs_th))
+    Pcondhs = (1-Dmax) * Ilrms**2 * Rdson_hs
