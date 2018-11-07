@@ -68,7 +68,28 @@ encountered \n",__FILE__, __LINE__, __FUNCTION__);exit(1);}else{;}};
 //#define DATA_OFFSET				1
 #define DATA_OFFSET				5
 
+/******************************************************************************/
+/*								MCP45 defines   							   */
+/******************************************************************************/
+/* MCP45 commands */
+#define MCP45_WRITE_DATA        0x00
+#define MCP45_INCREMENT         0x01
+#define MCP45_DECREMENT         0x02
+#define MCP45_READ_DATA         0x03
 
+/* MCP45 registers addresses */
+#define MCP45_ADDR_WIPER0       0x00
+#define MCP45_ADDR_TCON         0x04
+
+/* MCP45 TCON BITS*/
+/*R0B 1: P0B pin connected to resistor network, 0: disconnected*/
+#define MCP45_TCON_R0B_MASK     0x01
+/*R0W 1: P0W pin connected to resistor network, 0: disconnected*/
+#define MCP45_TCON_R0W_MASK     0x02
+/*R0A 1: P0A pin connected to resistor network, 0: disconnected*/
+#define MCP45_TCON_R0A_MASK     0x04
+/*R0HW 0: Resistor 0 forced to hardware pin shutdown, 1: not forced*/
+#define MCP45_TCON_ROHW_MASK    0x08
 
 
 /******************************************************************************/
@@ -166,7 +187,65 @@ FT_STATUS read_byte(uint8 slaveAddress, uint8 registerAddress, uint8 *data)
 	return status;
 }
 
-/*!
+FT_STATUS MCP45_read_wiper(uint8 slaveAddress, uint8 *value)
+{
+    FT_STATUS status;
+    uint8 memAddress;
+
+    memAddress = (MCP45_READ_DATA << 2) + (MCP45_ADDR_WIPER0 << 4);
+    status = read_byte(slaveAddress, memAddress, value);
+
+    return status;
+}
+
+FT_STATUS MCP45_read_tcon(uint8 slaveAddress, uint8 *value)
+{
+    FT_STATUS status;
+    uint8 memAddress;
+
+    memAddress = (MCP45_READ_DATA << 2) + (MCP45_ADDR_TCON << 4);
+    status = read_byte(slaveAddress, memAddress, value);
+
+    return status;
+}
+
+FT_STATUS MCP45_write_wiper(uint8 slaveAddress, uint8 value)
+{
+    FT_STATUS status;
+    uint8 memAddress;
+
+    memAddress = (MCP45_WRITE_DATA << 2) + (MCP45_ADDR_WIPER0 << 4);
+    status = write_byte(slaveAddress, memAddress, value);
+
+    return status;
+}
+
+FT_STATUS MCP45_increment_wiper(uint8 slaveAddress)
+{
+    FT_STATUS status;
+    uint8 memAddress;
+    uint8 value;
+
+    memAddress = (MCP45_INCREMENT << 2) + (MCP45_ADDR_WIPER0 << 4);
+    value = (MCP45_INCREMENT << 2) + (MCP45_ADDR_WIPER0 << 4);
+    status = write_byte(slaveAddress, memAddress, value);
+
+    return status;
+}
+
+FT_STATUS MCP45_decrement_wiper(uint8 slaveAddress)
+{
+    FT_STATUS status;
+    uint8 memAddress;
+    uint8 value;
+
+    memAddress = (MCP45_DECREMENT << 2) + (MCP45_ADDR_WIPER0 << 4);
+    value = (MCP45_INCREMENT << 2) + (MCP45_ADDR_WIPER0 << 4);
+    status = write_byte(slaveAddress, memAddress, value);
+
+    return status;
+}
+/*
  * \brief Main function / Entry point to the sample application
  *
  * This function is the entry point to the sample application. It opens the channel, writes to the
@@ -226,6 +305,34 @@ int main()
 		status = I2C_InitChannel(ftHandle,&channelConf);
 		APP_CHECK_STATUS(status);
 
+#if 1
+        address = 0;
+        status = MCP45_read_wiper(address, &data);
+		APP_CHECK_STATUS(status);
+        printf("Data read on wiper=0x%x\n", data);
+
+        data = 0x05;
+        status = MCP45_write_wiper(address, &data);
+		APP_CHECK_STATUS(status);
+        printf("Data written on wiper=0x%x\n", data);
+
+        status = MCP45_read_wiper(address, &data);
+		APP_CHECK_STATUS(status);
+        printf("Data read on wiper=0x%x\n", data);
+
+        status = MCP45_increment_wiper(address);
+		APP_CHECK_STATUS(status);
+        printf("Data incremented\n");
+
+        status = MCP45_read_wiper(address, &data);
+		APP_CHECK_STATUS(status);
+        printf("Data read on wiper=0x%x\n", data);
+
+        status = MCP45_read_tcon(address, &data);
+		APP_CHECK_STATUS(status);
+        printf("Data read on tcon=0x%x\n", data);
+
+#endif
 #if 0
 		buffer[0]=0x00;
 		buffer[1]=0x00;
@@ -236,7 +343,8 @@ int main()
 		APP_CHECK_STATUS(status);
 
 		status = I2C_CloseChannel(ftHandle);
-#else
+#endif
+#if 0
 
 		for(address=START_ADDRESS_EEPROM;address<END_ADDRESS_EEPROM;address++)
 		{
