@@ -9,8 +9,12 @@ import os, shutil
 import csv
 
 #Measurement parameters
-macs = ["04:52:C7:F9:43:38", "00:12:6F:B6:8D:BC", "88:C6:26:8C:0B:B1", "88:C6:26:EC:FC:D4", "7C:96:D2:04:F5:4B"]
-devices = ["Bose", "Beoplay",  "Megaboom", "Boom", "Denon"]
+macs = ["04:52:C7:F9:43:38", "00:12:6F:B6:8D:BC", "88:C6:26:8C:0B:B1",
+        "88:C6:26:EC:FC:D4", "7C:96:D2:04:F5:4B", "00:12:6F:50:45:B4",
+        "EC:81:93:06:A8:54", "2C:41:A1:F8:AF:36"]
+devices = ["Bose", "Beoplay",  "Megaboom",
+           "Boom", "Denon", "Beolit17",
+           "Megablast", "Revolve+"]
 record_time = 5
 sleep_time = 15
 
