@@ -107,8 +107,14 @@ def tas5766m_reset(device):
     i2c_write_reg(device, TAS5766M_RSTM_ADDR, TAS5766M_RSTM_BIT | TAS5766M_RSTR_BIT)
     i2c_write_reg(device, TAS5766M_RQST_ADDR, 0)
 
+def tas5766m_powerdown(device):
+    i2c_write_reg(device, TAS5766M_RQPD_ADDR, TAS5766M_RQPD_BIT)
+
 if __name__ == "__main__":
     device = 0x4c
     tas5766m_init(device)
     #tas5766m_reset(device)
     tas5766m_unmute(device)
+    for dev in [0x4d, 0x4e, 0x4f]:
+      tas5766m_powerdown(dev)
+
