@@ -24,9 +24,7 @@ def ex_cmd(cmd):
 if 0:
     # Play a multichannel sound
     soundfile = "multicanal8.wav"
-    
-    # R20 for Rodolphe, T20 for TI
-    cmd = "aplay {} -D sysdefault:CARD=T20".format(soundfile)
+    cmd = "aplay {} -D hw:1,0".format(soundfile)
     ex_cmd(cmd)
     
 if 1:
