@@ -6,7 +6,7 @@ Description=Custom sound player
 [Service]
 Type=simple
 ExecStart=/usr/bin/python /home/pi/Documents/divers/diegoberry/diegoberry.py
-ExecStop=killall python
+ExecStop=/usr/bin/killall python
 StandardOutput=syslog+console
 Restart=on-failure
 
