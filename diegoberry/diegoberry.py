@@ -8,6 +8,12 @@ Created on Wed Mar 27 15:01:32 2019
 import subprocess as sp
 import logging
 logger = logging.getLogger(__name__)
+import time
+
+import os,sys
+lib_path = os.path.abspath(os.path.join(__file__, '..', '..', 'amps'))
+sys.path.append(lib_path)
+import tas2770 as amp
 
 def ex_cmd(cmd):
     '''
@@ -21,16 +27,12 @@ def ex_cmd(cmd):
     else:
         raise IOError("CMD error: {}".format(stderr))
 
-if 0:
-    # Play a multichannel sound
-    soundfile = "multicanal8.wav"
-    cmd = "aplay {} -D hw:1,0".format(soundfile)
-    ex_cmd(cmd)
-    
-if 1:
+if __name__ == '__main__':
+
     # Needs to have pigpiod service started :
     # sudo raspi-config -> enable "allow remote connections" for GPIO and
     # sudo systemctl enable pigpiod
+    
     
     # PWM freq 100kHz
     freq = 100000
@@ -39,3 +41,13 @@ if 1:
     cmd = "pigs hp 12 {:d} {:d}".format(freq, int(duty*1e4)) # 500000 is 50% duty cycle
     ex_cmd(cmd)
     
+    # Amp init
+    device = amp.TAS2770_DEFAULT_I2C
+    amp.tas2770_set_volume(device, -12)
+    amp.tas2770_unmute(device)
+    
+    time.sleep(1)
+    # Play a multichannel sound
+    soundfile = "/home/pi/TheRobots8.wav"
+    cmd = "aplay {} -D hw:1,0".format(soundfile)
+    ex_cmd(cmd)
