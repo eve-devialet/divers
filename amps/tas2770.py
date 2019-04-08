@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from tas5825m_header import *
 import subprocess as sp
 import logging
 logger = logging.getLogger(__name__)
@@ -8,6 +7,7 @@ import tas2770_dump as td
 TAS2770_PWR_CTL_ADDR = 0x02
 TAS2770_PAGE_ADDR = 0x00
 TAS2770_BOOK_ADDR = 0x7F
+TAS2770_PCM_DIG_VOLUME_ADDR = 0x05
 
 def i2c_read_reg(device=0x41, register=0x2e, mode='b'):
     cmd = "sudo i2cget -y 1 0x{:02x} 0x{:02x} {}".format(device, register, mode)
@@ -40,6 +40,15 @@ def tas2770_init(device):
         for value in vals:
             i2c_write_reg(device, value[0], value[1])
 
+def tas2770_set_volume(volume):
+    '''
+    Volume value in dB (e.g : 0dB = max, -100dB = min, -101dB = mute)
+    We send the doubled hex value as command :
+    0x02 means -1 dB, 0x01 means -0.5 dB, etc.
+    '''
+    volume_val = int(abs(volume) * 2)
+    i2c_write_reg(device, TAS2770_PCM_DIG_VOLUME_ADDR, volume_val)
+
 def tas2770_unmute(device):
     print("TAS2770 unmute")
     # Unmute and make current and voltage sense active
@@ -47,13 +56,6 @@ def tas2770_unmute(device):
 
 if __name__ == "__main__":
     device = 0x41
-    # Only book 0
-    i2c_write_reg(device, TAS2770_BOOK_ADDR, 0x00)
-    for page, vals in enumerate(td.dump):
-        # Change page
-        i2c_write_reg(device, TAS2770_PAGE_ADDR, page)
-        for value in vals:
-            i2c_write_reg(device, value[0], value[1])
-
+    tas2770_set_volume(-12)
     tas2770_unmute(device)
 
