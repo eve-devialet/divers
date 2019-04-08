@@ -1,0 +1,15 @@
+# Place the file in /usr/lib/systemd/system and:
+# sudo systemctl enable avs
+[Unit]
+Description=Custom AVS start service
+
+[Service]
+Type=simple
+ExecStart=/home/pi/sdk-folder/sdk-build/SampleApp/src/SampleApp /home/pi/sdk-folder/sdk-build/Integration/AlexaClientSDKConfig.json /home/pi/sdk-folder/third-party/alexa-rpi/models
+ExecStop=killall SampleApp
+StandardOutput=syslog+console
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=avs.service
