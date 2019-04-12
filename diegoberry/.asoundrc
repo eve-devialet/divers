@@ -17,7 +17,7 @@ pcm.i2s_48k {
 # softvol - control for alsamixer
 # dmix - allow device to be shared
 #
-pcm.VocalFusion {
+pcm.VocalFusionOld {
     type plug
     slave.pcm {
 	type softvol
@@ -113,12 +113,29 @@ pcm.usbconvert {
         }
 }
 
+pcm.VocalFusion {
+    type plug
+    slave.pcm {
+	type softvol
+	slave.pcm {
+	    type dmix
+	    ipc_key 256
+	    ipc_perm 0666
+	    slave.pcm "usbcard"
+	}
+	control {
+	    name "Playback"
+	    card sndrpisimplecar
+	}
+    }
+}
 #
 # Default devices.
 #
 pcm.!default {
     type asym
     capture.pcm "VF_ASR_(R)"
+    #playback.pcm "VocalFusion"
     playback.pcm "usbconvert"
 }
 
