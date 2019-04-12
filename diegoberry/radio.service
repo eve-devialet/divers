@@ -1,0 +1,17 @@
+# Place the file in /usr/lib/systemd/system and:
+# sudo systemctl enable radio
+[Unit]
+Description=Plays webradio with VLC
+
+[Service]
+Type=simple
+User=pi
+Group=users
+ExecStart="/usr/bin/cvlc -Idummy /home/pi/playlist.xpi"
+ExecStop=/usr/bin/killall vlc
+StandardOutput=syslog+console
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
+Alias=radio.service
