@@ -4,11 +4,9 @@
 Description=Custom sound player
 
 [Service]
-Type=simple
+Type=oneshot
 ExecStart=/usr/bin/python /home/pi/Documents/divers/diegoberry/diegoberry.py
-ExecStop=/usr/bin/killall python
 StandardOutput=syslog+console
-Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
