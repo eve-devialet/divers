@@ -69,10 +69,9 @@ def send_and_retry(ser, cmd, retry=4):
         return
 
 def read_pinfile():
-    pinfile = "mypin.txt"
+    pinfile = "/home/pi/Documents/divers/diegoberry/mypin.txt"
     if not os.path.isfile(pinfile):
-        print("mypin.txt not found, using 0000")
-        return("0000")
+        raise IOError("File {} not found, cannot use pin code".format(pinfile))
     with open(pinfile) as mypinfile:
         pin = mypinfile.read()
         pin = pin.rstrip()
@@ -95,7 +94,7 @@ if __name__ == '__main__':
         raise ModuleError(out)
 
     cmd = 'AT+CPIN="{}"'.format(mypin)
-    out = send_and_retry(ser, cmd, 4)
+    out = send_and_retry(ser, cmd, 2)
 
     cmd = "AT+CPIN=?"
     out = send_and_retry(ser, cmd)
