@@ -46,6 +46,7 @@ if __name__ == '__main__':
     amp.tas2770_set_volume(device, -12)
     amp.tas2770_unmute(device)
     
+if 0:
     time.sleep(1)
     # Play a multichannel sound
     soundfile = "/home/pi/TheRobots8.wav"
