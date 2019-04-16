@@ -2,15 +2,18 @@
 # sudo systemctl enable radio
 [Unit]
 Description=Plays webradio with VLC
+Requires=player.service 4g.service
+After=player.service 4g.service
 
 [Service]
 Type=simple
 User=pi
 Group=users
-ExecStart="/usr/bin/cvlc -Idummy /home/pi/playlist.xpi"
+#ExecStart="/usr/bin/vlc -Idummy http://dir.xiph.org/listen/2430988/listen.m3u"
+ExecStart=/usr/bin/cvlc -Idummy /home/pi/playlist.xpi
 ExecStop=/usr/bin/killall vlc
 StandardOutput=syslog+console
-Restart=on-abort
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

@@ -2,9 +2,13 @@
 # sudo systemctl enable avs
 [Unit]
 Description=Custom AVS start service
+Wants=4g.service
+After=4g.service
 
 [Service]
 Type=simple
+user=pi
+group=users
 ExecStart=/home/pi/sdk-folder/sdk-build/SampleApp/src/SampleApp /home/pi/sdk-folder/sdk-build/Integration/AlexaClientSDKConfig.json /home/pi/sdk-folder/third-party/alexa-rpi/models
 ExecStop=/usr/bin/killall SampleApp
 StandardOutput=syslog+console
