@@ -59,26 +59,26 @@ def tas5825m_init(device):
     i2c_write_reg(device, TAS5825M_CTRL2_ADDR, TAS5825M_CTRL_STATE_PLAY)
 
 def tas5825m_unmute(device):
-    i2c_change_bit(device,TAS5825M_CTRL2_ADDR, TAS5825M_MUTE_BIT, value=False)
+    i2c_change_bit(device, TAS5825M_CTRL2_ADDR, TAS5825M_MUTE_BIT, value=False)
 
 def tas5825m_mute(device):
-    i2c_change_bit(device,TAS5825M_CTRL2_ADDR, TAS5825M_MUTE_BIT, value=True)
+    i2c_change_bit(device, TAS5825M_CTRL2_ADDR, TAS5825M_MUTE_BIT, value=True)
 
 def tas5825m_info(device):
-    dat = i2c_read_reg(device=0x4c, register=0x68, mode='b')
+    dat = i2c_read_reg(device=device, register=0x68, mode='b')
     print("Power state (0x03=play): {}".format(dat))
-    dat = i2c_read_reg(device=0x4c, register=0x37, mode='b')
+    dat = i2c_read_reg(device=device, register=0x37, mode='b')
     print("CLK detect (FS_MON) (0: FS error): {}".format(dat))
-    dat = i2c_read_reg(device=0x4c, register=0x38, mode='b')
+    dat = i2c_read_reg(device=device, register=0x38, mode='b')
     print("BCLK_MON: {}".format(dat))
-    dat = i2c_read_reg(device=0x4c, register=0x39, mode='b')
+    dat = i2c_read_reg(device=device, register=0x39, mode='b')
     print("CLKDET_STATUS: {}".format(dat))
-    dat = i2c_read_reg(device=0x4c, register=0x69, mode='b')
+    dat = i2c_read_reg(device=device, register=0x69, mode='b')
     print("Automute state (0: not muted): {}".format(dat))
-    reg = i2c_read_reg(device=0x4c, register=0x5E, mode='b')
+    reg = i2c_read_reg(device=device, register=0x5E, mode='b')
     val = int(reg, base=16) / 8.428
     print("PVDD_ADC: {} V ({})".format(val, reg))
-    dat = i2c_read_reg(device=0x4c, register=0x33, mode='b')
+    dat = i2c_read_reg(device=device, register=0x33, mode='b')
     print("SAP_CTRL1 (I2S format, should be 0x03): {}".format(dat))
 
 if __name__ == "__main__":
