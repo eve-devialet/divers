@@ -64,6 +64,34 @@ def tas5825m_unmute(device):
 def tas5825m_mute(device):
     i2c_change_bit(device, TAS5825M_CTRL2_ADDR, TAS5825M_MUTE_BIT, value=True)
 
+def tas5825m_mute(device):
+    i2c_change_bit(device, TAS5825M_CTRL2_ADDR, TAS5825M_MUTE_BIT, value=True)
+
+def tas5825m_volume(device, volume):
+    '''
+    Change volume in dB, from -103dB to 24dB
+    '''
+    if volume > 24:
+        volume_val = 0x00
+    elif volume < -103.5:
+        volume_val = 0xFF
+    else:
+        volume_val = 0x30 - int(volume * 2)
+    i2c_write_reg(device, TAS5825M_DIG_VOL_ADDR, volume_val)
+
+def tas5825m_check_faults(device):
+    registers = [TAS5825M_CHAN_FAULT_ADDR, TAS5825M_GLOBAL_FAULT1_ADDR,
+                 TAS5825M_GLOBAL_FAULT2_ADDR, TAS5825M_WARNING_ADDR]
+    reg_names = ["CHAN_FAULT", "GLOBAL_FAULT1",
+                 "GLOBAL_FAULT2", "WARNING"]
+    for i, name in zip(registers, reg_names):
+        dat = i2c_read_reg(device=device, register=TAS5825M_CHAN_FAULT_ADDR,
+                           mode='b')
+        dat = int(dat, base=16)
+        if dat != 0:
+            print("Error/warning found in {}: value 0b{:08b}".format(name, dat))
+
+
 def tas5825m_info(device):
     dat = i2c_read_reg(device=device, register=0x68, mode='b')
     print("Power state (0x03=play): {}".format(dat))
@@ -85,5 +113,6 @@ if __name__ == "__main__":
     device = 0x4c
     tas5825m_init(device)
     tas5825m_info(device)
+    tas5825m_check_faults(device)
 
 
