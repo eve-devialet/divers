@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 import time
 
 import os,sys
-lib_path = os.path.abspath(os.path.join(__file__, '..', '..', 'amps'))
+lib_path = os.path.abspath(os.path.join(__file__, 'amp'))
 sys.path.append(lib_path)
 import tas2770 as amp
 
