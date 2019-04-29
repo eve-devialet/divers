@@ -11,8 +11,9 @@ logger = logging.getLogger(__name__)
 import time
 
 import os,sys
-lib_path = os.path.abspath(os.path.join(__file__, 'amp'))
+lib_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'amp')
 sys.path.append(lib_path)
+
 import tas2770 as amp
 
 def ex_cmd(cmd):
@@ -45,6 +46,10 @@ if __name__ == '__main__':
     device = amp.TAS2770_DEFAULT_I2C
     amp.tas2770_set_volume(device, -12)
     amp.tas2770_unmute(device)
+    # Amp2 init
+    device2 = amp.TAS2770_DEFAULT_I2C+1
+    amp.tas2770_set_volume(device2, -12)
+    amp.tas2770_unmute(device2)
     
 if 0:
     time.sleep(1)

@@ -2,7 +2,6 @@
 import subprocess as sp
 import logging
 logger = logging.getLogger(__name__)
-import tas2770_dump as td
 
 TAS2770_PWR_CTL_ADDR = 0x02
 TAS2770_PAGE_ADDR = 0x00
@@ -32,16 +31,6 @@ def i2c_write_reg(device=0x41, register=0x2e, value="0x00", mode='b'):
     else:
         raise IOError("No I2C communication")
 
-def tas2770_init(device):
-    print("TAS2770 init")
-    # Only book 0
-    i2c_write_reg(device, TAS2770_BOOK_ADDR, 0x00)
-    for page, vals in enumerate(td.dump):
-        # Change page
-        i2c_write_reg(device, TAS2770_PAGE_ADDR, page)
-        for value in vals:
-            i2c_write_reg(device, value[0], value[1])
-
 def tas2770_set_volume(device, volume):
     '''
     Volume value in dB (e.g : 0dB = max, -100dB = min, -101dB = mute)
@@ -60,4 +49,3 @@ if __name__ == "__main__":
     device = TAS2770_DEFAULT_I2C
     tas2770_set_volume(device, -12)
     tas2770_unmute(device)
-
