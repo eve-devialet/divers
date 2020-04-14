@@ -9,13 +9,14 @@ Created on Tue Apr 14 10:12:21 2020
 import re
 import io
 import csv
+import codecs
 
 filename = "component.lia"
 
 ### Open file and parse pins
 with open(filename, "r") as myfile:
     mytext = ""
-    for line in io.open("component.lia", encoding="ISO-8859-1"):
+    for line in io.open("component.lia", encoding="ISO-8859-1", newline="\r\n"):
         mytext = mytext + line
  
 myreg = re.compile("""\(compPin "(\S+)" \(pinName "(\S+)"\) \(partNum (\d+)\) \(symPinNum (\d+)\) \(gateEq (\d+)\) \(pinEq (\d+)\) \(pinType (\S+)\) \)""")
@@ -83,5 +84,8 @@ for trouved in myreg_pindesc.finditer(mytext):
     copytext = copytext.replace(original, rep)
 
 filename_out = re.sub(".lia", ".remap.lia", filename)
-with open(filename_out, 'w') as myfile:
+
+#copytext = copytext.encode(encoding='iso-8859-1',errors='strict')
+with codecs.open(filename_out, 'w', "ISO-8859-1") as myfile:
+    #outputFile = codecs.open("textbase.tab", "w", "ISO-8859-1")
     myfile.write(copytext)
