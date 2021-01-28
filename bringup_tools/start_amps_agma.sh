@@ -42,4 +42,4 @@ echo out > gpio$i/direction
 echo 1 > gpio$i/value
 done
 
-bash ./tas2770.sh
+bash tas2770.sh
