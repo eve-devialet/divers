@@ -4,7 +4,7 @@ ACCEL_ASCII ""
   (asciiVersion 3 0)
   (timeStamp 2020 4 14 9 20 35)
   (program "Protel DXP" "Version 1.0.0.30000")
-  (copyright "Copyright © Altium Limited 2015")
+  (copyright "Copyright Altium Limited 2015")
   (fileAuthor "")
   (headerString "")
   (fileUnits mil)

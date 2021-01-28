@@ -17,10 +17,11 @@ import csv
 import io
 
 directory = "/media/psf/Home/STM32CubeIDE/HTML"
-base_filename = "DEVIALET_IC2_{}.html"
+base_filename = "DEVIALET_IC_{}.html"
 output_filename = "pin_numbers.csv"
 components = list()
 pins = list()
+descs = list()
 idx = 1
 
 while True:
@@ -45,6 +46,16 @@ while True:
                        """</td>\s+<td valign="top">\s+<font face="Arial" size="2">\s+""" +\
                        """(\d+)""", re.MULTILINE)
     
+    reg_desc = re.compile("""<b>\s+Description\s+</b>\s+</font>\s+""" +\
+                """</td>\s+<td valign="top">\s+<font face="Arial" size="2">\s+""" +\
+                """(.*)\r$""" +\
+                """\s+</font>""", re.MULTILINE)
+    reg_package = re.compile("""<font face="Arial" size="2">\s+""" +\
+        """PackageReference\s+</font>\s+</td>\s+""" +\
+        """<td valign="top">\s+<font face="Arial" size="2">\s+""" +\
+        """(.*)\r$\s+</font>\s+</td>""", re.MULTILINE)
+    regexpes = [reg_name, reg_num, reg_desc, reg_package]
+    
     component_name = reg_name.findall(html)
     if len(component_name) < 1:
         print("No component found at idx {}".format(idx))
@@ -57,11 +68,18 @@ while True:
         component_pin_num = 0
     else:
         component_pin_num = component_pin_num[0]
+    component_desc = reg_desc.findall(html)
+    if len(component_desc) < 1:
+        print("No description found for component {}".format(component_name))
+        component_desc = 0
+    else:
+        component_desc = component_desc[0]
     components.append(component_name)
     pins.append(int(component_pin_num))
+    descs.append(component_desc)
     
 output_file = output_filename
-mylist = zip(components, pins)
+mylist = zip(components, pins, descs)
 with open(output_file, 'w') as myfile:
     mycsv = csv.writer(myfile)
     mycsv.writerows(mylist)
