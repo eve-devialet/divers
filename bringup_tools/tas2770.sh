@@ -3,6 +3,8 @@
 
 i2cdev=2
 i2caddrlist="0x41 0x42 0x44 0x46"
+# Remove kernel module to avoid putting amp in soft shutdown
+rmmod snd_soc_tas2770
 for i2caddr in ${i2caddrlist}; do
 	# Init
 	addr=("0x00" "0x7f" "0x00" "0x00" "0x03" "0x05" "0x0e" "0x1b" "0x32" "0x3c" "0x7e")
@@ -28,5 +30,19 @@ for i2caddr in ${i2caddrlist}; do
 	for i in {0..3}; do
 		echo "i2cset -y $i2cdev $i2caddr ${addr[$i]} ${data[$i]}" 
 		i2cset -y $i2cdev $i2caddr ${addr[$i]} ${data[$i]} 
+	done
+	# Set 48kHz format, high to low, autodetect sample rate disabled
+	addr=("0x02" "0x0a" "0x02")
+	data=("0x02" "0x17" "0x00")
+	for i in {0..2}; do
+		echo "i2cset -y $i2cdev $i2caddr ${addr[$i]} ${data[$i]}" 
+		i2cset -y $i2cdev $i2caddr ${addr[$i]} ${data[$i]} 
+	done
+	# Read interrupt registers to clear
+	addr=("0x24" "0x25" "0x26")
+	for i in {0..2}; do
+		echo "i2cget -y $i2cdev $i2caddr ${addr[$i]}" 
+		res=`i2cget -y $i2cdev $i2caddr ${addr[$i]}`
+		echo "Interrupt reg $i: $res"
 	done
 done
