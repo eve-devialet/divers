@@ -16,11 +16,6 @@ if $pwm_boost; then
 	echo 90 > duty_cycle
 	echo 1 > enable
 
-	# Boost activation
-	cd /sys/class/gpio
-	echo 37 > export
-	echo out > gpio37/direction
-	echo 1 > gpio37/value
 else
 	echo "Set up GPIO boost"
 	cd /sys/class/gpio
@@ -31,6 +26,11 @@ else
 		echo 0 > gpio$i/value
 	done
 fi
+# Boost activation
+cd /sys/class/gpio
+echo 37 > export
+echo out > gpio37/direction
+echo 1 > gpio37/value
 
 
 # Enable amps
