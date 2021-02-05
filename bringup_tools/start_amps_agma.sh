@@ -26,11 +26,11 @@ else
 		echo 0 > gpio$i/value
 	done
 fi
-# Boost activation
+# Boost deactivation
 cd /sys/class/gpio
 echo 37 > export
 echo out > gpio37/direction
-echo 1 > gpio37/value
+echo 0 > gpio37/value
 
 
 # Enable amps
@@ -42,4 +42,11 @@ echo out > gpio$i/direction
 echo 1 > gpio$i/value
 done
 
-bash tas2770.sh
+# Input for interrupt
+cd /sys/class/gpio
+for i in 116 114 107 105; do
+echo GPIO $i
+echo $i > export
+echo in > gpio$i/direction
+done
+
