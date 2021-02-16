@@ -3,7 +3,8 @@
 
 i2cdev=2
 i2caddrlist="0x41 0x42 0x44 0x46"
-remove_temp=false
+#i2caddrlist="0x41"
+remove_temp=true
 
 for i2caddr in ${i2caddrlist}; do
 	# Software reset
