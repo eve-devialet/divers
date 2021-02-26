@@ -1,0 +1,203 @@
+#!/bin/sh
+
+VOL=${VOLUME:-0.05}
+# see pulsesrc properties
+# seems PA, in QC configuration, does some remap & remix by default, avoid this :
+GST_PULSE_STREAM_NO_REMAP_CHANNELS=0x10
+GST_PULSE_STREAM_NO_REMIX_CHANNELS=0x20
+
+PIPE_FLAGS=$((${GST_PULSE_STREAM_NO_REMAP_CHANNELS}|${GST_PULSE_STREAM_NO_REMIX_CHANNELS}))
+
+
+# MATRIX routing for QC tests mode at factory
+# 9 tests modes are defined :
+# W_ALL, FR_all, FR_Front, FR_Upfiring_Front, FR_Upfiring_Rear, FR_Sides, Center, W_FR_all, W_FR_C_all
+# those tests modes will exercize all 11 output channels differently
+# channels are : W_left, W_right, (dvt3)
+# Front_left, Upfiring_Front_Left, Upfiring_Rear_Left, Side_Left
+# Front_Right, Upfiring_Front_Right, Upfiring_Rear_Right, Side_Right
+# center (ball)
+# there will be no mix here, we just want to activate some channels and not others, and may be play with volume
+# physical channels are :
+# data 0-1 = ch 0 - 3 : FR Left
+# data 2-3 = ch 4-7 : FR Right
+# data 4 : ch 8-9 : ADH / DVT3, woofer L+R
+# data 5-6 = ch 10-13 : Ball (one used : 10)
+
+start_amps()
+{
+# Let's mono, it seems right has an issue
+tinymix set "fr-back-left ASI1 Sel" Left
+tinymix set "fr-front-right ASI1 Sel" Left
+tinymix set "fr-front-left ASI1 Sel" Left
+tinymix set "fr-back-right ASI1 Sel" Left
+
+tinymix set "PRI_MI2S_RX Audio Mixer MultiMedia1" 1
+tinymix set "PRIM_MI2S_RX SampleRate" "KHZ_48"
+tinymix set "PRIM_MI2S_RX Format" "S16_LE"
+tinymix set "PRIM_MI2S_RX Channels" "Sixteen"
+}
+
+build_matrix()
+{
+#default values : all channel activ
+TESTMODE=${1:-W_FR_C_all}
+
+case ${TESTMODE} in
+	W_All)
+		FRR1=0.0
+		FRR2=0.0
+		FRR3=0.0
+		FRR4=0.0
+		FRL1=0.0
+		FRL2=0.0
+		FRL3=0.0
+		FRL4=0.0
+		WOOL=1.0
+		WOOR=1.0
+		FRC0=0.0
+		;;
+	FR_All)
+		FRR1=1.0
+		FRR2=1.0
+		FRR3=1.0
+		FRR4=1.0
+		FRL1=1.0
+		FRL2=1.0
+		FRL3=1.0
+		FRL4=1.0
+		WOOL=0.0
+		WOOR=0.0
+		FRC0=0.0
+		;;
+	FR_Front)
+		FRR1=0.0
+		FRR2=0.0
+		FRR3=0.0
+		FRR4=1.0
+		FRL1=0.0
+		FRL2=0.0
+		FRL3=0.0
+		FRL4=1.0
+		WOOL=0.0
+		WOOR=0.0
+		FRC0=0.0
+		;;
+	FR_Upfiring_Front)
+		FRR1=0.0
+		FRR2=1.0
+		FRR3=0.0
+		FRR4=0.0
+		FRL1=0.0
+		FRL2=1.0
+		FRL3=0.0
+		FRL4=0.0
+		WOOL=0.0
+		WOOR=0.0
+		FRC0=0.0
+		;;
+	FR_Upfiring_Rear)
+		FRR1=1.0
+		FRR2=0.0
+		FRR3=0.0
+		FRR4=0.0
+		FRL1=1.0
+		FRL2=0.0
+		FRL3=0.0
+		FRL4=0.0
+		WOOL=0.0
+		WOOR=0.0
+		FRC0=0.0
+		;;
+	FR_Sides)
+		FRR1=0.0
+		FRR2=0.0
+		FRR3=1.0
+		FRR4=0.0
+		FRL1=0.0
+		FRL2=0.0
+		FRL3=1.0
+		FRL4=0.0
+		WOOL=0.0
+		WOOR=0.0
+		FRC0=0.0
+		;;
+	Center)
+		FRR1=0.0
+		FRR2=0.0
+		FRR3=0.0
+		FRR4=0.0
+		FRL1=0.0
+		FRL2=0.0
+		FRL3=0.0
+		FRL4=0.0
+		WOOL=0.0
+		WOOR=0.0
+		FRC0=1.0
+		;;
+	W_FR_all)
+		FRR1=1.0
+		FRR2=1.0
+		FRR3=1.0
+		FRR4=1.0
+		FRL1=1.0
+		FRL2=1.0
+		FRL3=1.0
+		FRL4=1.0
+		WOOL=1.0
+		WOOR=1.0
+		FRC0=0.0
+		;;
+	W_FR_C_all)
+		FRR1=1.0
+		FRR2=1.0
+		FRR3=1.0
+		FRR4=1.0
+		FRL1=1.0
+		FRL2=1.0
+		FRL3=1.0
+		FRL4=1.0
+		WOOL=1.0
+		WOOR=1.0
+		FRC0=1.0
+		;;
+	*)
+		echo ""
+		exit 1
+		;;
+esac
+
+
+# now build the matrix with this. It depends if 2 channel input (Optical and no TS, temp solution)
+# or TS factory solution where 2 ch input, TS processing, 11 ch out .
+
+# we keep 16 ch out for the moment
+MATRIX_11CHIN="<\
+<(f)${FRR1}, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0>, \
+<(f)0.0, (f)${FRR2}, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0>, \
+<(f)0.0, (f)0.0, (f)${FRR3}, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0>, \
+<(f)0.0, (f)0.0, (f)0.0, (f)${FRR4}, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0>, \
+<(f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)${FRL1}, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0>, \
+<(f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)${FRL2}, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0>, \
+<(f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)${FRL3}, (f)0.0, (f)0.0, (f)0.0, (f)0.0>, \
+<(f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)${FRL4}, (f)0.0, (f)0.0, (f)0.0>, \
+<(f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)${WOOL}>, \
+<(f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)${WOOR}, (f)0.0>, \
+<(f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)${FRC0}, (f)0.0, (f)0.0>, \
+<(f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)${FRC0}, (f)0.0, (f)0.0>, \
+<(f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)${WOOL}>, \
+<(f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)${WOOR}, (f)0.0>, \
+<(f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)${WOOL}>, \
+<(f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)0.0, (f)${WOOR}, (f)0.0>>"
+
+echo "${MATRIX_11CHIN}"
+}
+
+MATRIX_11CHIN=$(build_matrix ${1})
+if [ "${MATRIX_11CHIN}" = "" ] ;then
+	echo "Unknown test mode" 
+	exit 1
+fi
+
+start_amps
+
