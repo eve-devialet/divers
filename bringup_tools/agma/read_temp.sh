@@ -1,5 +1,8 @@
 #/bin/bash
 
+echo "Usage: nohub bash read_temp.sh [filename] [timestep]"
+echo "Do not forget nohup, or script will stop when adb session ends"
+echo ""
 FILENAME=$1
 echo "Filename: "$FILENAME
 
@@ -18,7 +21,7 @@ adcpath="/sys/devices/platform/soc/200f000.qcom,spmi/spmi-0/spmi0-00/200f000.qco
 i2cset -y 2 0x6a 0x11 0x52
 i2cset -y 2 0x6a 0x10 0x30
 
-echo "Time (s);Temp (boost I2C TMP75B); Temp (LSM6D accelero); Temp (boost ADC LMT85)" > $FILENAME
+echo "Time (s);Temp (amb I2C TMP75B); Temp (LSM6D accelero); Temp (boost ADC LMT85)" > $FILENAME
 
 while true; do
   time=`date +"%H:%M:%S"`
